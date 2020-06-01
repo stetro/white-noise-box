@@ -39,6 +39,7 @@ void loop() {
   if (playing || gain > 0.0) {
     if ((millis() - last_gain_interval) > GAIN_INTERVAL) {
       last_gain_interval = millis();
+      Serial.printf("gain %lf\n", gain);
       if (playing && gain < MAX_GAIN) {
         gain += 0.1;
       }
