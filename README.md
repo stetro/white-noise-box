@@ -9,9 +9,9 @@ Simple device which plays any given wav file. Used to play white noise sounds li
 TODOs
 -----
 
-- [ ] Connect ESP32 with DAC
-- [ ] Play simple wav file with pcm5102a DAC
-- [ ] Implement buttons
+- [x] Connect ESP32 with DAC
+- [x] Play simple wav file with pcm5102a DAC
+- [x] Implement buttons
 - [ ] Build enclosure
 
 
