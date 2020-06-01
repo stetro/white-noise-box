@@ -4,8 +4,8 @@
 #include "AudioGeneratorWAV.h"
 #include "AudioOutputI2S.h"
 #include "water.h"
-#define MAX_GAIN 2.0
-#define GAIN_INTERVAL 100
+#define MAX_GAIN 1.5
+#define GAIN_INTERVAL 50
 
 AudioFileSourcePROGMEM *in;
 AudioGeneratorWAV *wav;
@@ -29,10 +29,10 @@ void setup() {
 
   out->SetGain(gain);
 
-  pinMode(18, INPUT_PULLUP);
-  pinMode(19, INPUT_PULLUP);
-  attachInterrupt(18, on, FALLING);
-  attachInterrupt(19, off, FALLING);
+  pinMode(17, INPUT_PULLUP);
+  pinMode(16, INPUT_PULLUP);
+  attachInterrupt(17, on, FALLING);
+  attachInterrupt(16, off, FALLING);
 }
 
 void loop() {
