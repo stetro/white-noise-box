@@ -1,35 +1,63 @@
 #include <Arduino.h>
-#include <WiFi.h>
 
 #include "AudioFileSourcePROGMEM.h"
 #include "AudioGeneratorWAV.h"
-#include "AudioOutputI2SNoDAC.h"
-#include "noise.h"
+#include "AudioOutputI2S.h"
+#include "water.h"
+#define MAX_GAIN 2.0
+#define GAIN_INTERVAL 100
 
+AudioFileSourcePROGMEM *in;
 AudioGeneratorWAV *wav;
-AudioFileSourcePROGMEM *file;
-AudioOutputI2SNoDAC *out;
+AudioOutputI2S *out;
+
+bool playing = false;
+float gain = 0.0;
+long last_gain_interval = 0;
+
+void IRAM_ATTR on() { playing = true; }
+void IRAM_ATTR off() { playing = false; }
 
 void setup() {
-  WiFi.mode(WIFI_OFF);
   btStop();
   Serial.begin(115200);
-  delay(500);
-  Serial.printf("starting ...");
 
-  file = new AudioFileSourcePROGMEM(noise, sizeof(noise));
-  out = new AudioOutputI2SNoDAC();
+  audioLogger = &Serial;
+  in = new AudioFileSourcePROGMEM(water, sizeof(water));
   wav = new AudioGeneratorWAV();
-  wav->begin(file, out);
+  out = new AudioOutputI2S();
+
+  out->SetGain(gain);
+
+  pinMode(18, INPUT_PULLUP);
+  pinMode(19, INPUT_PULLUP);
+  attachInterrupt(18, on, FALLING);
+  attachInterrupt(19, off, FALLING);
 }
 
 void loop() {
-  Serial.println("ON");
-  delay(1000);
-  if (wav->isRunning()) {
-    if (!wav->loop()) wav->stop();
-  } else {
-    Serial.printf("WAV done\n");
-    delay(1000);
+  if (playing || gain > 0.0) {
+    if ((millis() - last_gain_interval) > GAIN_INTERVAL) {
+      last_gain_interval = millis();
+      if (playing && gain < MAX_GAIN) {
+        gain += 0.1;
+      }
+      if (!playing) {
+        gain -= 0.1;
+      }
+      out->SetGain(gain);
+      if (gain <= 0.0 && !playing) {
+        wav->stop();
+        in->close();
+      }
+    }
+    if (wav->isRunning()) {
+      wav->loop();
+    } else {
+      wav->stop();
+      in->close();
+      in = new AudioFileSourcePROGMEM(water, sizeof(water));
+      wav->begin(in, out);
+    }
   }
 }
