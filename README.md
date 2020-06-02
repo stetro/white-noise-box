@@ -4,7 +4,7 @@ ESP32 White Noise Box
 
 Simple device which plays any given wav file. Used to play white noise sounds like rain, waterfalls or vacuum cleaner.
 
-> Work in Progress!
+![Hardware](hardware.jpg)
 
 TODOs
 -----
@@ -12,6 +12,6 @@ TODOs
 - [x] Connect ESP32 with DAC
 - [x] Play simple wav file with pcm5102a DAC
 - [x] Implement buttons
-- [ ] Build enclosure
+- [x] Build enclosure
 
 
